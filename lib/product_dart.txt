@@ -1,0 +1,59 @@
+class Product {
+  final String id;
+  final String name;
+  final String sku;
+  final String categId;
+  final double price;
+  final double standardPrice;
+  final String description;
+  final int inStock;
+  final int reserved;
+  final String unit;
+  final String? image;
+
+  Product({
+    required this.id,
+    required this.name,
+    required this.sku,
+    required this.categId,
+    required this.price,
+    required this.standardPrice,
+    required this.description,
+    required this.inStock,
+    required this.reserved,
+    required this.unit,
+    this.image,
+  });
+
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      id: json['id'],
+      name: json['name'],
+      sku: json['sku'],
+      categId: json['categ_id']?.toString() ?? '',
+      price: json['price'].toDouble(),
+      standardPrice: json['standard_price']?.toDouble() ?? 0.0,
+      description: json['description'],
+      inStock: json['inStock'],
+      reserved: json['reserved'],
+      unit: json['unit'],
+      image: json['image'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'sku': sku,
+      'categ_id': categId,
+      'price': price,
+      'standard_price': standardPrice,
+      'description': description,
+      'inStock': inStock,
+      'reserved': reserved,
+      'unit': unit,
+      'image': image,
+    };
+  }
+}

@@ -1,0 +1,154 @@
+import 'package:flutter/material.dart';
+import '../../widgets/stat_card.dart';
+import '../../widgets/action_card.dart';
+import 'customers_screen.dart';
+import 'opportunities_screen.dart';
+import '../../services/crm_service.dart'; // <-- Import your CRM service here
+
+class CrmHomeScreen extends StatefulWidget {
+  const CrmHomeScreen({super.key});
+
+  @override
+  State<CrmHomeScreen> createState() => _CrmHomeScreenState();
+}
+
+class _CrmHomeScreenState extends State<CrmHomeScreen> with RouteAware {
+  late Future<List> _customersFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshCustomers();
+  }
+
+  void _refreshCustomers() {
+    _customersFuture = _fetchTotalCustomers();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    ModalRoute.of(context)?.addScopedWillPopCallback(_onWillPop);
+  }
+
+  Future<bool> _onWillPop() async {
+    setState(() {
+      _refreshCustomers();
+    });
+    return true;
+  }
+
+  @override
+  void dispose() {
+    ModalRoute.of(context)?.removeScopedWillPopCallback(_onWillPop);
+    super.dispose();
+  }
+
+  Future<List> _fetchTotalCustomers() async {
+    final crmService = CrmService();
+    return await crmService.getCustomers(customerType: 'all');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List>(
+      future: _customersFuture,
+      builder: (context, snapshot) {
+        final total = snapshot.hasData ? snapshot.data!.length.toString() : '';
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('CRM'),
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Customer Relationship Management',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.grey[600],
+                      ),
+                ),
+                const SizedBox(height: 24),
+                // Stats Grid
+                Row(
+                  children: [
+                    Expanded(
+                      child: StatCard(
+                        title: 'Total Customers',
+                        value: total,
+                        icon: Icons.people,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: StatCard(
+                        title: 'Active Opportunities',
+                        value: '56',
+                        icon: Icons.track_changes,
+                        color: Colors.green,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: StatCard(
+                        title: 'Revenue Pipeline',
+                        value: '\$245K',
+                        icon: Icons.trending_up,
+                        color: Colors.purple,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: StatCard(
+                        title: 'Conversion Rate',
+                        value: '23%',
+                        icon: Icons.analytics,
+                        color: Colors.orange,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+                // Quick Actions
+                Text(
+                  'Quick Actions',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 16),
+                ActionCard(
+                  title: 'Customers',
+                  subtitle: 'Manage customer relationships',
+                  icon: Icons.people,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const CustomersScreen()),
+                    );
+                  },
+                ),
+                ActionCard(
+                  title: 'Opportunities',
+                  subtitle: 'Track sales opportunities',
+                  icon: Icons.track_changes,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const OpportunitiesScreen()),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

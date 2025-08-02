@@ -1,0 +1,25 @@
+import 'package:flutter/material.dart';
+
+class TasksScreen extends StatelessWidget {
+  const TasksScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Tasks & Activities'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              // TODO: Navigate to add task screen
+            },
+          ),
+        ],
+      ),
+      body: const Center(
+        child: Text('Tasks & Activities Screen - Coming Soon'),
+      ),
+    );
+  }
+}
